@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EmployeeServiceImplTest {
-
+    private String baseUrl;
     private String employeeUrl;
     private String employeeIdUrl;
 
@@ -36,8 +36,9 @@ public class EmployeeServiceImplTest {
 
     @Before
     public void setup() {
-        employeeUrl = "http://localhost:" + port + "/employee";
-        employeeIdUrl = "http://localhost:" + port + "/employee/{id}";
+        baseUrl = "http://localhost:" + port;
+        employeeUrl = baseUrl + "/employee";
+        employeeIdUrl = baseUrl + "/employee/{id}";
     }
 
     @Test
