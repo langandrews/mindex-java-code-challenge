@@ -23,17 +23,7 @@ public class ReportingStructureServiceImpl implements ReportingStructureService 
         LOG.debug("Generating report for employee with id [{}]", id);
 
         Employee employee = employeeRepository.findByEmployeeId(id);
-        Integer numberOfReports = calculateNumberOfReports(employee.getDirectReports());
-
-        if (numberOfReports != 0) {
-            for (Employee reportingEmployee : employee.getDirectReports()) {
-                Employee employeeLookup = employeeRepository.findByEmployeeId(reportingEmployee.getEmployeeId());
-                if (employeeLookup == null) {
-                    continue;
-                }
-                numberOfReports += calculateNumberOfReports(employeeLookup.getDirectReports());
-            }
-        }
+        Integer numberOfReports = calculateNumberOfReports(employee);
 
         ReportingStructure reportingStructure = new ReportingStructure();
         return reportingStructure
@@ -41,11 +31,19 @@ public class ReportingStructureServiceImpl implements ReportingStructureService 
                 .setNumberOfReports(numberOfReports);
     }
 
-    private Integer calculateNumberOfReports(List<Employee> directReports) {
-        if (directReports == null) {
-            return 0;
+    private Integer calculateNumberOfReports(Employee employee) {
+        Integer numberOfReports = employee.getDirectReports() != null ? employee.getDirectReports().size() : 0;
+
+        if (numberOfReports != 0) {
+            for (Employee reportingEmployee : employee.getDirectReports()) {
+                Employee employeeLookup = employeeRepository.findByEmployeeId(reportingEmployee.getEmployeeId());
+                if (employeeLookup == null) {
+                    continue;
+                }
+                numberOfReports += calculateNumberOfReports(employeeLookup);
+            }
         }
 
-        return directReports.size();
+        return numberOfReports;
     }
 }
